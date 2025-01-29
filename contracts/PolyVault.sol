@@ -86,6 +86,9 @@ contract MyPolyVault is ERC4626Fees, ERC1155Holder {
         bytes32 hash,
         bytes memory signature
     ) external view returns (bytes4) {
+        // Only allow signatures to be verified by the CTF_EXCHANGE contract
+        require(msg.sender == CTF_EXCHANGE, "Only exchange contract can verify");
+
         address signer = hash.recover(signature);
 
         if (signer == manager) {
@@ -98,7 +101,7 @@ contract MyPolyVault is ERC4626Fees, ERC1155Holder {
     function redeemPositions(
         bytes32 parentCollectionId,
         bytes32 conditionId,
-        uint256[] calldata indexSets 
+        uint256[] calldata indexSets
     ) external {
         ICTF(CTF).redeemPositions(
             USDC,
