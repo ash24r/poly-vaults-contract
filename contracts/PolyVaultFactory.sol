@@ -11,7 +11,9 @@ contract PolyVaultFactory {
         string name,
         string symbol,
         uint256 entryFee,
-        uint256 exitFee
+        uint256 depositEndTime,
+        uint256 tradingEndTime,
+        uint256 profitShare
     );
 
     // Store deployed vaults
@@ -31,19 +33,23 @@ contract PolyVaultFactory {
     function createVault(
         address manager_,
         uint256 entryFee_,
-        uint256 exitFee_,
         string memory name_,
-        string memory symbol_
+        string memory symbol_,
+        uint256 depositEndTime_,
+        uint256 tradingEndTime_,
+        uint256 profitShare_
     ) external returns (address) {
         MyPolyVault vault = new MyPolyVault(
             manager_,
             entryFee_,
-            exitFee_,
             name_,
             symbol_,
             USDC,
             CTF,
-            CTF_EXCHANGE
+            CTF_EXCHANGE,
+            depositEndTime_,
+            tradingEndTime_,
+            profitShare_
         );
 
         deployedVaults.push(address(vault));
@@ -54,9 +60,11 @@ contract PolyVaultFactory {
             name_,
             symbol_,
             entryFee_,
-            exitFee_
+            depositEndTime_,
+            tradingEndTime_,
+            profitShare_
         );
-        
+
         return address(vault);
     }
 
