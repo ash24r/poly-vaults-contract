@@ -17,21 +17,19 @@ async function main() {
 
     const provider = ethers.getDefaultProvider();
     const gasPrice = (await provider.getFeeData()).gasPrice || BigInt(0);
-    const increasedGasPrice = 40000000000;
 
     console.log(`Current gas price: ${gasPrice}`);
-    console.log(`Increased gas price: ${increasedGasPrice}`);
 
     const PolyVaultFactory = await ethers.getContractFactory("PolyVaultFactory");
-    const factory = await PolyVaultFactory.deploy(USDC, CTF, CTF_EXCHANGE, {    
-        gasPrice: increasedGasPrice,
+    const factory = await PolyVaultFactory.deploy(USDC, CTF, CTF_EXCHANGE, {
+        gasPrice: gasPrice,
     });
 
-console.log("Waiting for deployment confirmation...");
-await factory.waitForDeployment();
+    console.log("Waiting for deployment confirmation...");
+    await factory.waitForDeployment();
 
-const factoryAddress = await factory.getAddress();
-console.log(`PolyVaultFactory deployed to: ${factoryAddress}`);
+    const factoryAddress = await factory.getAddress();
+    console.log(`PolyVaultFactory deployed to: ${factoryAddress}`);
 }
 
 main()
