@@ -30,22 +30,6 @@ abstract contract ERC4626Fees is ERC4626 {
         return assets + _feeOnRaw(assets, _entryFeeBasisPoints());
     }
 
-    /// @dev Preview adding an exit fee on withdraw. See {IERC4626-previewWithdraw}.
-    function previewWithdraw(
-        uint256 assets
-    ) public view virtual override returns (uint256) {
-        uint256 fee = _feeOnRaw(assets, _exitFeeBasisPoints());
-        return super.previewWithdraw(assets + fee);
-    }
-
-    /// @dev Preview taking an exit fee on redeem. See {IERC4626-previewRedeem}.
-    function previewRedeem(
-        uint256 shares
-    ) public view virtual override returns (uint256) {
-        uint256 assets = super.previewRedeem(shares);
-        return assets - _feeOnTotal(assets, _exitFeeBasisPoints());
-    }
-
     /// @dev Send entry fee to {_entryFeeRecipient}. See {IERC4626-_deposit}.
     function _deposit(
         address caller,
@@ -63,39 +47,13 @@ abstract contract ERC4626Fees is ERC4626 {
         }
     }
 
-    /// @dev Send exit fee to {_exitFeeRecipient}. See {IERC4626-_deposit}.
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal virtual override {
-        uint256 fee = _feeOnRaw(assets, _exitFeeBasisPoints());
-        address recipient = _exitFeeRecipient();
-
-        super._withdraw(caller, receiver, owner, assets, shares);
-
-        if (fee > 0 && recipient != address(this)) {
-            SafeERC20.safeTransfer(IERC20(asset()), recipient, fee);
-        }
-    }
-
     // === Fee configuration ===
 
     function _entryFeeBasisPoints() internal view virtual returns (uint256) {
         return 0; // replace with e.g. 100 for 1%
     }
 
-    function _exitFeeBasisPoints() internal view virtual returns (uint256) {
-        return 0; // replace with e.g. 100 for 1%
-    }
-
     function _entryFeeRecipient() internal view virtual returns (address) {
-        return address(0); // replace with e.g. a treasury address
-    }
-
-    function _exitFeeRecipient() internal view virtual returns (address) {
         return address(0); // replace with e.g. a treasury address
     }
 
